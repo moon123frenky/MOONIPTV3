@@ -1,110 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MOON IPTV Player</title>
-  <link rel="icon" href="https://icons.iconarchive.com/icons/iconsmind/outline/256/Moon-2-icon.png" type="image/png">
-  <style>
-    body {
-      margin: 0;
-      background-image: url('https://cdn.wallpapersafari.com/39/32/VZwhA7.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      font-family: Arial, sans-serif;
-      color: white;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player Bot FlixTvON. By.@bsweb</title>
+    <!-- MediaElement CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mediaelement@4.2.16/build/mediaelementplayer.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #004d00; /* Cor de fundo verde escuro */
+            color: #ffffff; /* Cor do texto */
+        }
+        header, footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #003300; /* Cor de fundo mais escura para o cabeçalho e rodapé */
+            color: white;
+            width: 100%;
+        }
+        #video-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #player {
+            width: 480px; /* Tamanho fixo para telas maiores */
+            height: 270px; /* Mantendo a proporção de 16:9 */
+        }
+        .credits {
+            margin-top: 10px;
+        }
+        .social-icons a {
+            margin: 0 10px;
+            color: white;
+            text-decoration: none;
+        }
 
-    #player {
-      width: 100vw;
-      height: 100vh;
-      background-color: black;
-    }
+        /* Estilos responsivos */
+        @media (max-width: 767px) {
+            #player {
+                width: 100%; /* Ajusta o player para ocupar toda a largura da tela */
+                height: auto;
+            }
 
-    .overlay {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #fff;
-    }
-  </style>
+            header, footer {
+                padding: 10px;
+            }
+
+            .social-icons a {
+                margin: 0 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="overlay">🌙 Modded Frenky</div>
-  <video id="player" controls autoplay>
-    <source src="" type="application/x-mpegURL">
-    Your browser does not support the video tag.
-  </video>
+    <header>
+        <h1>Video Player Bot FlixTvON. By.@bsweb</h1>
+    </header>
+    <div id="video-container">
+        <video id="player" playsinline controls autoplay>
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <footer>
+        <div class="credits">
+            Created by @bsweb
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+    </footer>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const streamUrl = params.get('url');
+    <!-- MediaElement JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/mediaelement@4.2.16/build/mediaelement-and-player.min.js"></script>
+    <!-- hls.js JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        // Função para obter os parâmetros da URL
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
 
-    if (streamUrl) {
-      document.getElementById('player').src = streamUrl;
-    } else {
-      alert("Nije prosleđen nijedan URL za reprodukciju.");
-    }
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>MOON IPTV Player</title>
-  <link rel="icon" href="https://icons.iconarchive.com/icons/iconsmind/outline/256/Moon-2-icon.png" type="image/png">
-  <style>
-    body {
-      margin: 0;
-      background-image: url('https://cdn.wallpapersafari.com/39/32/VZwhA7.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      font-family: Arial, sans-serif;
-      color: white;
-    }
+        // Função para decodificar base64
+        function decodeBase64(base64) {
+            return decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
 
-    #player {
-      width: 100vw;
-      height: 100vh;
-      background-color: black;
-    }
+        // Função para detectar o tipo de mídia com base na URL
+        function getMediaType(url) {
+            const extension = url.split('.').pop().toLowerCase();
+            switch(extension) {
+                case 'm3u8':
+                    return 'application/x-mpegURL';
+                case 'mp4':
+                    return 'video/mp4';
+                case 'webm':
+                    return 'video/webm';
+                case 'ogg':
+                    return 'video/ogg';
+                default:
+                    return 'video/mp4'; // Default to mp4 if the extension is unknown
+            }
+        }
 
-    .overlay {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #fff;
-    }
-  </style>
-</head>
-<body>
-  <div class="overlay">🌙 Modded Frenky</div>
-  <video id="player" controls autoplay>
-    <source src="" type="application/x-mpegURL">
-    Your browser does not support the video tag.
-  </video>
+        // Função para reproduzir o vídeo com MediaElement.js e hls.js
+        function playWithMediaElement(videoUrl) {
+            const video = document.getElementById('player');
+            let hls;
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const streamUrl = params.get('url');
+            function initializePlayer() {
+                const mediaType = getMediaType(videoUrl);
 
-    if (streamUrl) {
-      document.getElementById('player').src = streamUrl;
-    } else {
-      alert("Nije prosleđen nijedan URL za reprodukciju.");
-    }
-  </script>
+                if (Hls.isSupported() && mediaType === 'application/x-mpegURL') {
+                    hls = new Hls({
+                        // Configurações para otimizar a estabilidade do fluxo
+                        maxBufferLength: 30,
+                        maxMaxBufferLength: 60,
+                        liveSyncDurationCount: 3,
+                        liveMaxLatencyDurationCount: 5,
+                        enableWorker: true,
+                        fragLoadingTimeOut: 10000,
+                        fragLoadingRetryDelay: 500,
+                        fragLoadingMaxRetry: 3,
+                        levelLoadingTimeOut: 10000,
+                        levelLoadingRetryDelay: 500,
+                        levelLoadingMaxRetry: 3,
+                        startLevel: -1,
+                        defaultAudioCodec: undefined,
+                    });
+                    hls.loadSource(videoUrl);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                        video.play();
+                    });
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        if (data.fatal) {
+                            switch(data.type) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    // Rede ou servidor falhou, tente reconectar imediatamente
+                                    console.error('Network error, retrying immediately...');
+                                    hls.startLoad();
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    // Erro de mídia, tente recuperar
+                                    console.error('Media error, recovering...');
+                                    hls.recoverMediaError();
+                                    break;
+                                default:
+                                    // Erro desconhecido, reiniciar o player
+                                    console.error('Unknown error, destroying Hls and reinitializing...');
+                                    hls.destroy();
+                                    initializePlayer();
+                                    break;
+                            }
+                        }
+                    });
+                } else {
+                    video.src = videoUrl;
+                    video.type = mediaType;
+                    video.addEventListener('loadedmetadata', function () {
+                        video.play();
+                    });
+                    video.addEventListener('error', function() {
+                        // Tentar reconectar imediatamente em caso de erro
+                        console.error('Error occurred, retrying immediately...');
+                        video.load();
+                    });
+                }
+
+                // Inicializa o MediaElement.js
+                new MediaElementPlayer(video, {
+                    // Permitir reprodução automática
+                    success: function (mediaElement, originalNode) {
+                        mediaElement.addEventListener('play', function() {
+                            console.log('Video is playing');
+                        });
+                    }
+                });
+            }
+
+            initializePlayer();
+        }
+
+        // Obtém o URL do vídeo a partir dos parâmetros da URL
+        var base64Url = getParameterByName('url');
+
+        // Decodifica a URL do vídeo
+        var videoUrl = base64Url ? decodeBase64(base64Url) : null;
+
+        // Inicia a reprodução do vídeo com base no navegador
+        if (videoUrl) {
+            playWithMediaElement(videoUrl);
+        } else {
+            alert('Nenhum URL de vídeo fornecido.');
+        }
+    </script>
+
+    <!-- Inclusão dos scripts -->
+    <script id="_wauyfi">var _wau = _wau || []; _wau.push(["dynamic", "53rpyelj3l", "yfi", "c4302bffffff", "small"]);</script>
+    <script async src="//waust.at/d.js"></script>
 </body>
 </html>
