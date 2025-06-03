@@ -53,3 +53,58 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MOON IPTV Player</title>
+  <link rel="icon" href="https://icons.iconarchive.com/icons/iconsmind/outline/256/Moon-2-icon.png" type="image/png">
+  <style>
+    body {
+      margin: 0;
+      background-image: url('https://cdn.wallpapersafari.com/39/32/VZwhA7.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    #player {
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">🌙 Modded Frenky</div>
+  <video id="player" controls autoplay>
+    <source src="" type="application/x-mpegURL">
+    Your browser does not support the video tag.
+  </video>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const streamUrl = params.get('url');
+
+    if (streamUrl) {
+      document.getElementById('player').src = streamUrl;
+    } else {
+      alert("Nije prosleđen nijedan URL za reprodukciju.");
+    }
+  </script>
+</body>
+</html>
